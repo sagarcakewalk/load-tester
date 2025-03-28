@@ -40,6 +40,7 @@ COPY .env .env
 
 # Set production environment
 ENV NODE_ENV=production
+ENV VCS_BRANCH=${VCS_BRANCH:-main}
 
 # Expose port
 EXPOSE 8080
