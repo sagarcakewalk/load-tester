@@ -36,7 +36,7 @@ RUN pnpm install --prod
 COPY --from=builder /app/dist ./dist
 
 # Copy environment file
-COPY .env .env
+# COPY .env .env
 
 # Set production environment
 ENV NODE_ENV=production
