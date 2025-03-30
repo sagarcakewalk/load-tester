@@ -15,15 +15,12 @@ app.disable('etag');
 app.get(`${API_PREFIX}/health`, async (req: Request, res: Response) => {
     const startTime = Date.now();
     try {
-        // Check Redis connection with timeout
-        await redisService.ping();
         const responseTime = Date.now() - startTime;
 
         res.status(200)
             .set('Cache-Control', 'no-store')
             .json({
                 status: "I'm Alive!",
-                redis: "Connected",
                 responseTime: `${responseTime}ms`
             });
     } catch (error) {
@@ -32,7 +29,6 @@ app.get(`${API_PREFIX}/health`, async (req: Request, res: Response) => {
             .set('Cache-Control', 'no-store')
             .json({
                 status: "I'm Alive!",
-                redis: "Disconnected",
                 error: error instanceof Error ? error.message : 'Unknown error',
                 responseTime: `${responseTime}ms`
             });
