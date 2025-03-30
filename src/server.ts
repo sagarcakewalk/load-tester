@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { redisService } from './services/redis.service';
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = Number(process.env.PORT) || 8080;
 const API_PREFIX = '/api';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -55,9 +55,19 @@ app.get(`${API_PREFIX}/redisexchange`, async (req: Request, res: Response) => {
     }
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log(`Health check endpoint: http://localhost:${port}${API_PREFIX}/health`);
-    console.log(`Redis exchange endpoint: http://localhost:${port}${API_PREFIX}/redisexchange`);
+// Start the server with IPv4 and IPv6 support
+const server = app.listen(port, '::', () => {
+    if (isDevelopment) {
+        console.log(`Server is running on port ${port}`);
+        console.log(`Health check endpoint: http://localhost:${port}${API_PREFIX}/health`);
+        console.log(`Redis exchange endpoint: http://localhost:${port}${API_PREFIX}/redisexchange`);
+
+        // Log server addresses
+        const addresses = server.address();
+        if (typeof addresses === 'object' && addresses) {
+            console.log('Server listening on:');
+            console.log(`IPv4: http://0.0.0.0:${port}`);
+            console.log(`IPv6: http://[::]:${port}`);
+        }
+    }
 }); 

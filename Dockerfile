@@ -35,11 +35,7 @@ RUN pnpm install --prod
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy environment file
-# COPY .env .env
-
-# Set production environment
-ENV NODE_ENV=production
+# Set environment variables
 ENV VCS_BRANCH=${VCS_BRANCH:-main}
 
 # Expose port
