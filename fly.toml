@@ -40,3 +40,7 @@ primary_region = "sin"  # Singapore region, you can change this
 
 [build.args]
   VCS_BRANCH = "main"
+
+[metrics]
+  port = 9091
+  path = "/metrics"

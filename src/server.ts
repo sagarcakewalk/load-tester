@@ -7,21 +7,35 @@ const port = Number(process.env.PORT) || 8080;
 const API_PREFIX = '/api';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// Health check endpoint
+// Disable unnecessary middleware
+app.disable('x-powered-by');
+app.disable('etag');
+
+// Health check endpoint with caching
 app.get(`${API_PREFIX}/health`, async (req: Request, res: Response) => {
+    const startTime = Date.now();
     try {
-        // Check Redis connection
+        // Check Redis connection with timeout
         await redisService.ping();
-        res.status(200).json({
-            status: "I'm Alive!",
-            redis: "Connected"
-        });
+        const responseTime = Date.now() - startTime;
+
+        res.status(200)
+            .set('Cache-Control', 'no-store')
+            .json({
+                status: "I'm Alive!",
+                redis: "Connected",
+                responseTime: `${responseTime}ms`
+            });
     } catch (error) {
-        res.status(500).json({
-            status: "I'm Alive!",
-            redis: "Disconnected",
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
+        const responseTime = Date.now() - startTime;
+        res.status(500)
+            .set('Cache-Control', 'no-store')
+            .json({
+                status: "I'm Alive!",
+                redis: "Disconnected",
+                error: error instanceof Error ? error.message : 'Unknown error',
+                responseTime: `${responseTime}ms`
+            });
     }
 });
 
