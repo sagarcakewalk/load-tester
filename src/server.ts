@@ -7,32 +7,28 @@ const port = Number(process.env.PORT) || 8080;
 const API_PREFIX = '/api';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// Disable unnecessary middleware
+// Performance optimizations
 app.disable('x-powered-by');
 app.disable('etag');
+app.disable('view cache');
+app.disable('trust proxy');
 
 // Health check endpoint with caching
-app.get(`${API_PREFIX}/health`, async (req: Request, res: Response) => {
+app.get(`${API_PREFIX}/health`, (req: Request, res: Response) => {
     const startTime = Date.now();
-    try {
-        const responseTime = Date.now() - startTime;
 
-        res.status(200)
-            .set('Cache-Control', 'no-store')
-            .json({
-                status: "I'm Alive!",
-                responseTime: `${responseTime}ms`
-            });
-    } catch (error) {
-        const responseTime = Date.now() - startTime;
-        res.status(500)
-            .set('Cache-Control', 'no-store')
-            .json({
-                status: "I'm Alive!",
-                error: error instanceof Error ? error.message : 'Unknown error',
-                responseTime: `${responseTime}ms`
-            });
-    }
+    // Set performance headers
+    res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'X-Response-Time': `${Date.now() - startTime}ms`
+    });
+
+    res.status(200).json({
+        status: "I'm Alive!",
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Redis exchange endpoint
