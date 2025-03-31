@@ -12,6 +12,8 @@ COPY package.json pnpm-lock.yaml ./
 # Install dependencies
 RUN pnpm install
 
+RUN npm install -g autocannon
+
 # Copy source code
 COPY . .
 
