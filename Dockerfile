@@ -1,6 +1,11 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+RUN apk --update add postgresql-client
+RUN apk add ioping
+RUN apk add fio
+RUN apk add traceroute
+
 # Install pnpm
 RUN npm install -g pnpm
 
